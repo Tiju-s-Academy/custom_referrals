@@ -10,6 +10,7 @@
         'views/new_lead_view.xml',
         'views/referrals_menu.xml',
     ],
+
     'application': True,
     'license': 'LGPL-3',
 }
