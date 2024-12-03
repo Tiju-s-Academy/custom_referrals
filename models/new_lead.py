@@ -46,6 +46,7 @@ class NewLead(models.Model):
 
     def action_submit(self):
 
+        sales_team = self.env['crm.team'].search([('name', '=', 'Sales Team Mavelikkara')], limit=1)
         employee = self.env['hr.employee'].search([('user_id','=', self.user.id)])
         print(employee)
         for record in self:
@@ -66,6 +67,7 @@ class NewLead(models.Model):
                 'name': record.name,
                 'partner_id': partner.id,
                 'referred_by': employee.id,
+                'team_id': sales_team.id,
                 'phone': record.phone,
                 'course_id': record.course_id.id,
                 'city': record.location,
