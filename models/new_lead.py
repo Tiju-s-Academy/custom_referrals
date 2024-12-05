@@ -14,7 +14,7 @@ class NewLead(models.Model):
     name = fields.Char(string='Opportunity', compute='_compute_name', store=True)
     customer_name = fields.Char(string='Customer', required=True)
     phone = fields.Char(string='Phone')
-    course_id = fields.Many2one('product.product', string='Course')
+    course_id = fields.Many2one('product.product', string='Course',required=True)
     email = fields.Char(string='Email')
     state = fields.Selection(selection=[('draft', 'Draft'), ('submitted', 'Submitted')], string='State',
                              default='draft', tracking=True)
@@ -70,7 +70,7 @@ class NewLead(models.Model):
                 'referred_by': employee.id,
                 'team_id': sales_team.id,
                 'phone': record.phone,
-                'course_id': record.course_id.id,
+                'course_id': record.course_id,
                 'city': record.location,
                 'email_from': record.email,
             })
