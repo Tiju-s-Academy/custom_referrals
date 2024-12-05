@@ -29,20 +29,20 @@ class NewLead(models.Model):
             else:
                 rec.name = "Referral Lead"
 
-    # @api.constrains('phone', 'email')
-    # def _check_phone_email_in_crm_lead(self):
-    #     for record in self:
-    #         # Check for duplicate phone in crm.lead
-    #         if record.phone:
-    #             crm_lead_with_same_phone = self.env['crm.lead'].search([('phone', '=', record.phone)], limit=1)
-    #             if crm_lead_with_same_phone:
-    #                 raise ValidationError(f"The phone number {record.phone} is already used in CRM Leads.")
-    #
-    #         # Check for duplicate email in crm.lead
-    #         if record.email:
-    #             crm_lead_with_same_email = self.env['crm.lead'].search([('email_from', '=', record.email)], limit=1)
-    #             if crm_lead_with_same_email:
-    #                 raise ValidationError(f"The email address {record.email} is already used in CRM Leads.")
+    @api.constrains('phone', 'email')
+    def _check_phone_email_in_crm_lead(self):
+        for record in self:
+            # Check for duplicate phone in crm.lead
+            if record.phone:
+                crm_lead_with_same_phone = self.env['crm.lead'].search([('phone', '=', record.phone)], limit=1)
+                if crm_lead_with_same_phone:
+                    raise ValidationError(f"The phone number {record.phone} is already used in CRM Leads.")
+
+            # Check for duplicate email in crm.lead
+            if record.email:
+                crm_lead_with_same_email = self.env['crm.lead'].search([('email_from', '=', record.email)], limit=1)
+                if crm_lead_with_same_email:
+                    raise ValidationError(f"The email address {record.email} is already used in CRM Leads.")
 
     def action_submit(self):
 
@@ -62,7 +62,8 @@ class NewLead(models.Model):
                     'phone': record.phone,
                     'email': record.email,
                 })
-            self.state = 'submitted'
+            print("name",record.name)
+            print("sales team ",sales_team.id)
             self.env['crm.lead'].sudo().create({
                 'name': record.name,
                 'partner_id': partner.id,
@@ -73,6 +74,7 @@ class NewLead(models.Model):
                 'city': record.location,
                 'email_from': record.email,
             })
+            self.state = 'submitted'
 
 
 

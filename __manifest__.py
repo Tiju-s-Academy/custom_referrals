@@ -5,12 +5,12 @@
     'author': 'Tijus Academy',
     'depends': ['base', 'web', 'mail'],
     'data': [
+        'security/group.xml',
         'security/ir.model.access.csv',
         'security/ir_rule.xml',
         'views/new_lead_view.xml',
         'views/referrals_menu.xml',
     ],
-
     'application': True,
     'license': 'LGPL-3',
 }
