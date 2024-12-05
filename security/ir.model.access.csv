@@ -1,4 +1,4 @@
 id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
-access_new_lead_admin,new lead admin,model_new_lead,admin_referral_group,1,1,1,1
-access_new_lead_user,new lead user,model_new_lead,base.group_user,1,1,1,0
+access_new_referral_user,new.referral,model_new_referral,base.group_user,1,1,1,0
+access_new_referral_admin,new.referral.admin,model_new_referral,admin_referral,1,1,1,1
 
