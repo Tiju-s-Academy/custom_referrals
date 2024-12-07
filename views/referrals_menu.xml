@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <menuitem id="referrals_menu_root" name="Referrals" web_icon="custom_referrals,/static/description/icon.png"/>
+    <menuitem id="referrals_menu_root" name="Referrals" web_icon="custom_referrals,static/description/icon.png"/>
     <menuitem id="lead_menu" name="New Lead" parent="referrals_menu_root" action="action_new_lead"/>
 </odoo>
