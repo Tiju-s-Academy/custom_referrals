@@ -69,6 +69,7 @@ class NewReferral(models.Model):
                 'course_id': record.course_id.id,
                 'city': record.location,
                 'email_from': record.email,
+                'source_id': 'Employee Referral',
             })
             record.state = 'submitted'
             return lead
