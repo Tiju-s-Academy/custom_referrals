@@ -1,7 +1,6 @@
 from odoo import http, SUPERUSER_ID
 from odoo import fields,models,api
 from odoo.exceptions import ValidationError
-import random
 
 
 class NewReferral(models.Model):
@@ -53,23 +52,19 @@ class NewReferral(models.Model):
         employee = self.env['hr.employee'].search([('user_id', '=', self.user.id)])
         for record in self:
             superuser = record.env['res.users'].sudo().browse(SUPERUSER_ID)
-            # Check if a partner already exists with the same name or email
-            partner = self.env['res.partner'].search(
-                ['|', ('name', '=', record.customer_name), ('email', '=', record.email)], limit=1
-            )
+            partner = self.env['res.partner'].sudo().create({
+                'name': record.customer_name,
+                'phone': record.phone,
+                'email': record.email,
+            })
+            print("new partner", partner)
 
-            # Create a new partner if none exists
-            if not partner:
-                partner = self.env['res.partner'].create({
-                    'name': record.customer_name,
-                    'phone': record.phone,
-                    'email': record.email,
-                })
             lead = self.env['crm.lead'].with_user(superuser).create({
                 'name': record.name,
                 'partner_id': partner.id,
                 'referred_by': employee.id,
                 'phone': record.phone,
+                'user_id': False,
                 'team_id': team.id,
                 'course_id': record.course_id.id,
                 'city': record.location,
