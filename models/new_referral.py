@@ -58,7 +58,7 @@ class NewReferral(models.Model):
                 'email': record.email,
             })
             print("new partner", partner)
-
+            source_id = self.env['utm.source'].search([('name','=','Employee Referral')])
             lead = self.env['crm.lead'].with_user(superuser).create({
                 'name': record.name,
                 'partner_id': partner.id,
@@ -69,7 +69,7 @@ class NewReferral(models.Model):
                 'course_id': record.course_id.id,
                 'city': record.location,
                 'email_from': record.email,
-                'source_id': 'Employee Referral',
+                'source_id': source_id.id,
             })
             record.state = 'submitted'
             return lead
