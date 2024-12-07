@@ -1,3 +1,4 @@
+from odoo import http, SUPERUSER_ID
 from odoo import fields,models,api
 from odoo.exceptions import ValidationError
 import random
@@ -36,7 +37,7 @@ class NewReferral(models.Model):
         for record in self:
             # Check for duplicate phone in crm.lead
             if record.phone:
-                crm_lead_with_same_phone = self.env['crm.lead'].search([('phone', '=', record.phone)], limit=1)
+                crm_lead_with_same_phone = self.env['crm.lead'].sudo().search([('phone', '=', record.phone)], limit=1)
                 if crm_lead_with_same_phone:
                     raise ValidationError(f"The phone number {record.phone} is already used in CRM Leads.")
 
@@ -51,6 +52,7 @@ class NewReferral(models.Model):
         print("team",team.member_ids)
         employee = self.env['hr.employee'].search([('user_id', '=', self.user.id)])
         for record in self:
+            superuser = record.env['res.users'].sudo().browse(SUPERUSER_ID)
             # Check if a partner already exists with the same name or email
             partner = self.env['res.partner'].search(
                 ['|', ('name', '=', record.customer_name), ('email', '=', record.email)], limit=1
@@ -63,7 +65,7 @@ class NewReferral(models.Model):
                     'phone': record.phone,
                     'email': record.email,
                 })
-            lead = self.env['crm.lead'].sudo().create({
+            lead = self.env['crm.lead'].with_user(superuser).create({
                 'name': record.name,
                 'partner_id': partner.id,
                 'referred_by': employee.id,
@@ -72,20 +74,9 @@ class NewReferral(models.Model):
                 'course_id': record.course_id.id,
                 'city': record.location,
                 'email_from': record.email,
-                'user_id': self._get_salesperson_for_referral()
             })
             record.state = 'submitted'
             return lead
-
-    def _get_salesperson_for_referral(self):
-        team = self.env['crm.team'].search([('name', '=', 'Sales Team Mavelikara')], limit=1)
-        print(team.member_ids)
-        if team:
-            sales_team_users = team.member_ids
-            if sales_team_users:
-                random_user = random.choice(sales_team_users)
-                return random_user.user_id.id
-        return False
 
 
 
