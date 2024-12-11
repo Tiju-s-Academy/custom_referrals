@@ -21,6 +21,11 @@ class NewReferral(models.Model):
                              default='draft', tracking=True)
     location = fields.Char(string='Location')
     user = fields.Many2one('res.users', string='Request Owner', default=lambda self: self.env.user, readonly=True)
+    salesperson = fields.Many2one('res.users', string='Salesperson')
+    lead_id = fields.Many2one('crm.lead', string='Related Lead', readonly=True)  # Link to the related CRM lead
+
+    stage = fields.Char(string='Lead Stage', readonly=True, compute='_compute_stage', store=True)
+    last_update = fields.Datetime(string='Last Update', readonly=True, compute='_compute_last_update', store=True)
 
 
     @api.depends('customer_name')
@@ -46,9 +51,21 @@ class NewReferral(models.Model):
                 if crm_lead_with_same_email:
                     raise ValidationError(f"The email address {record.email} is already used in CRM Leads.")
 
+    @api.depends('lead_id.stage_id')
+    def _compute_stage(self):
+        """Compute the current stage of the associated lead."""
+        for rec in self:
+            rec.stage = rec.lead_id.stage_id.name if rec.lead_id and rec.lead_id.stage_id else 'Submitted'
+
+    @api.depends('lead_id.write_date')
+    def _compute_last_update(self):
+        """Compute the last update date."""
+        for rec in self:
+            rec.last_update = rec.lead_id.write_date
+
     def action_submit(self):
         team = self.env['crm.team'].search([('name', '=', 'Sales Team Mavelikkara')], limit=1)
-        print("team",team.member_ids)
+        print("team", team.member_ids)
         employee = self.env['hr.employee'].search([('user_id', '=', self.user.id)])
         for record in self:
             superuser = record.env['res.users'].sudo().browse(SUPERUSER_ID)
@@ -70,7 +87,11 @@ class NewReferral(models.Model):
                 'city': record.location,
                 'email_from': record.email,
                 'source_id': source_id.id,
+
             })
+            record.lead_id = lead.id
+            record.salesperson = lead.user_id.id
+            record.stage = lead.stage_id.name if lead.stage_id else 'Not Assigned'
             record.state = 'submitted'
             return lead
 

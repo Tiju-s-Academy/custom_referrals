@@ -3,7 +3,7 @@
     'version': '17.0.1.0.0',
     'summary': 'This Apps for students Referrals',
     'author': 'Tijus Academy',
-    'depends': ['base', 'web', 'mail', 'sale', 'hr'],
+    'depends': ['base', 'web', 'mail', 'sale', 'hr','crm'],
     'data': [
         'security/group.xml',
         'security/ir.model.access.csv',
