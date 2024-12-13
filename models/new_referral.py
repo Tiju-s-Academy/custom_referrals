@@ -64,9 +64,9 @@ class NewReferral(models.Model):
             rec.last_update = rec.lead_id.write_date
 
     def action_submit(self):
-        team = self.env['crm.team'].search([('name', '=', 'Sales Team Mavelikkara')], limit=1)
+        team = self.env['crm.team'].sudo().search([('name', '=', 'Sales Team Mavelikkara')], limit=1)
         print("team", team.member_ids)
-        employee = self.env['hr.employee'].search([('user_id', '=', self.user.id)])
+        employee = self.env['hr.employee'].sudo().search([('user_id', '=', self.user.id)])
         for record in self:
             superuser = record.env['res.users'].sudo().browse(SUPERUSER_ID)
             partner = self.env['res.partner'].sudo().create({
@@ -75,7 +75,7 @@ class NewReferral(models.Model):
                 'email': record.email,
             })
             print("new partner", partner)
-            source_id = self.env['utm.source'].search([('name','=','Employee Referral')])
+            source_id = self.env['utm.source'].sudo().search([('name','=','Employee Referral')])
             lead = self.env['crm.lead'].with_user(superuser).create({
                 'name': record.name,
                 'partner_id': partner.id,
