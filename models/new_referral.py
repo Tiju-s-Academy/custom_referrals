@@ -47,7 +47,7 @@ class NewReferral(models.Model):
 
             # Check for duplicate email in crm.lead
             if record.email:
-                crm_lead_with_same_email = self.env['crm.lead'].search([('email_from', '=', record.email)], limit=1)
+                crm_lead_with_same_email = self.env['crm.lead'].sudo().search([('email_from', '=', record.email)], limit=1)
                 if crm_lead_with_same_email:
                     raise ValidationError(f"The email address {record.email} is already used in CRM Leads.")
 
