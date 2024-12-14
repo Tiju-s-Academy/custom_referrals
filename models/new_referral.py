@@ -76,7 +76,7 @@ class NewReferral(models.Model):
                 'email': record.email,
             })
             print("new partner", partner)
-            source_id = self.env['utm.source'].sudo().search([('name','=','Employee Referral')])
+            source_id = self.env['utm.source'].sudo().search([('name','=','Online SBU Referral')])
             lead = self.env['crm.lead'].with_user(superuser).create({
                 'name': record.name,
                 'partner_id': partner.id,
