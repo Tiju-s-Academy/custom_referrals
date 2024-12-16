@@ -94,7 +94,8 @@ class NewReferral(models.Model):
             record.salesperson = lead.user_id.id
             record.stage = lead.stage_id.name if lead.stage_id else 'Not Assigned'
             record.state = 'submitted'
-            return lead
+
+        return lead
 
 
 
