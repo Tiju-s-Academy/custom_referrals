@@ -4,12 +4,11 @@
         <field name="name">new.lead.tree</field>
         <field name="model">new.referral</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree default_order='create_date'>
                 <field name="name" required="1"/>
                 <field name="phone"/>
                 <field name="stage" widget="badge" decoration-info="stage == 'New Lead'"
                        decoration-warning="stage in ('Prospect (P)')" decoration-success="stage == 'Admission (A)'"/>
-                <field name="salesperson"/>
                 <field name="last_update"/>
             </tree>
         </field>

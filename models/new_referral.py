@@ -7,10 +7,6 @@ class NewReferral(models.Model):
     _name = 'new.referral'
     _description = 'New Referral'
     _inherit = 'mail.thread'
-    _sql_constraints = [
-        ('phone_unique', 'unique(phone)', 'This phone number is already used.'),
-        ('email_unique', 'unique(email)', 'This email is already used.'),
-    ]
 
     name = fields.Char(string='Opportunity', compute='_compute_name', store=True)
     customer_name = fields.Char(string='Customer', required=True)
@@ -26,7 +22,6 @@ class NewReferral(models.Model):
 
     stage = fields.Char(string='Lead Stage', readonly=True, compute='_compute_stage', store=True)
     last_update = fields.Datetime(string='Last Update', readonly=True, compute='_compute_last_update', store=True)
-
 
     @api.depends('customer_name')
     def _compute_name(self):
@@ -56,13 +51,15 @@ class NewReferral(models.Model):
     def _compute_stage(self):
         """Compute the current stage of the associated lead."""
         for rec in self:
-            rec.stage = rec.lead_id.stage_id.name if rec.lead_id and rec.lead_id.stage_id else 'Submitted'
+            # Use sudo to bypass security restrictions if needed
+            rec.stage = rec.lead_id.sudo().stage_id.name if rec.lead_id and rec.lead_id.stage_id else 'Not Submitted'
 
     @api.depends('lead_id.write_date')
     def _compute_last_update(self):
         """Compute the last update date."""
         for rec in self:
-            rec.last_update = rec.lead_id.write_date
+            # Use sudo to bypass security restrictions if needed
+            rec.last_update = rec.lead_id.sudo().write_date
 
     def action_submit(self):
         team = self.env['crm.team'].sudo().search([('name', '=', 'Sales Team Mavelikkara')], limit=1)
