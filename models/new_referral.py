@@ -1,6 +1,5 @@
 from odoo import http, SUPERUSER_ID
 from odoo import fields,models,api
-from odoo.exceptions import ValidationError
 
 
 class NewReferral(models.Model):
