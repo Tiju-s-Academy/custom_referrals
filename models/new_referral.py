@@ -16,7 +16,7 @@ class NewReferral(models.Model):
                              default='draft', tracking=True)
     location = fields.Char(string='Location')
     user = fields.Many2one('res.users', string='Request Owner', default=lambda self: self.env.user, readonly=True)
-    salesperson = fields.Many2one('res.users', string='Salesperson')
+    salesperson = fields.Many2one('res.users', string='Salesperson', compute='_compute_salesperson', store=True, readonly=True)
     lead_id = fields.Many2one('crm.lead', string='Related Lead', readonly=True)  # Link to the related CRM lead
 
     stage = fields.Char(string='Lead Stage', readonly=True, compute='_compute_stage', store=True)
@@ -59,6 +59,11 @@ class NewReferral(models.Model):
         for rec in self:
             # Use sudo to bypass security restrictions if needed
             rec.last_update = rec.lead_id.sudo().write_date
+
+    @api.depends('lead_id.user_id')
+    def _compute_salesperson(self):
+        for rec in self:
+            rec.salesperson = rec.lead_id.sudo().user_id.id
 
     def action_submit(self):
         team = self.env['crm.team'].sudo().search([('name', '=', 'Sales Team Mavelikkara')], limit=1)
