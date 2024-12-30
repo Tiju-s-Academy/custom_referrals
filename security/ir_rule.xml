@@ -3,7 +3,7 @@
     <record id="rule_user_see_own_referral" model="ir.rule">
         <field name="name">Users: Can see only their own records</field>
         <field name="model_id" ref="model_new_referral"/> <!-- Adjust to the correct model -->
-        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        <field name="domain_force">[('user', '=', user.id)]</field>
         <field name="groups" eval="[(4, ref('base.group_user'))]"/>
     </record>
     <record id="admin_see_all_referral" model="ir.rule">

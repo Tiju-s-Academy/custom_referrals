@@ -15,12 +15,13 @@ class NewReferral(models.Model):
     state = fields.Selection(selection=[('draft', 'Draft'), ('submitted', 'Submitted')], string='State',
                              default='draft', tracking=True)
     location = fields.Char(string='Location')
-    user = fields.Many2one('res.users', string='Request Owner', default=lambda self: self.env.user, readonly=True)
+    user = fields.Many2one('res.users', string='Lead By', default=lambda self: self.env.user)
     salesperson = fields.Many2one('res.users', string='Salesperson')
     lead_id = fields.Many2one('crm.lead', string='Related Lead', readonly=True)  # Link to the related CRM lead
 
     stage = fields.Char(string='Lead Stage', readonly=True, compute='_compute_stage', store=True)
     last_update = fields.Datetime(string='Last Update', readonly=True, compute='_compute_last_update', store=True)
+    is_changed_user = fields.Boolean(string='Change user', default=False)
 
     @api.depends('customer_name')
     def _compute_name(self):
@@ -92,6 +93,21 @@ class NewReferral(models.Model):
             record.state = 'submitted'
 
         return lead
+
+    def action_change_user(self):
+        self.is_changed_user = True
+
+    @api.model
+    def write(self, vals):
+        """Reset `is_changed_user` after saving the record."""
+        res = super(NewReferral, self).write(vals)
+        if 'user' in vals:  # Reset only if the user field was changed
+            self.is_changed_user = False
+        return res
+
+
+
+
 
 
 

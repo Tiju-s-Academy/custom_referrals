@@ -11,6 +11,7 @@
                        decoration-warning="stage in ('Prospect (P)')" decoration-success="stage == 'Admission (A)'"/>
                 <field name="last_update"/>
                 <field name="salesperson"/>
+                <field name="user"/>
             </tree>
         </field>
     </record>
@@ -19,14 +20,17 @@
         <field name="model">new.referral</field>
         <field name="arch" type="xml">
             <form string="new lead">
+                <field name="is_changed_user" invisible="1"/>
                 <header>
                     <button name="action_submit" type="object" string="Submit" class="oe_highlight"
                             invisible="state !='draft'"/>
+                    <button name="action_change_user" type="object" string="Change Ownership" class="oe_highlight"
+                            invisible="state !='submitted'" groups="custom_referrals.admin_referral"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
-
+                            <field name="user" groups="custom_referrals.admin_referral" readonly="not is_changed_user"/>
                             <field name="customer_name" readonly="state != 'draft'"/>
                             <field name="phone" required="1" readonly="state != 'draft'"/>
                             <field name="state" invisible="1" readonly="state != 'draft'"/>
@@ -41,7 +45,7 @@
                     <notebook>
                         <page string="Lead Status">
                             <group>
-                                <field name="salesperson" readonly="state != 'draft'"/>
+                                <field name="salesperson" readonly="1"/>
                                 <field name="last_update" readonly="1"/>
                             </group>
                         </page>
