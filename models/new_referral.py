@@ -61,6 +61,11 @@ class NewReferral(models.Model):
             # Use sudo to bypass security restrictions if needed
             rec.last_update = rec.lead_id.sudo().write_date
 
+    @api.depends('lead_id.user_id')
+    def _compute_salesperson(self):
+        for rec in self:
+            rec.salesperson = rec.lead_id.sudo().user_id.id
+
     def action_submit(self):
         team = self.env['crm.team'].sudo().search([('name', '=', 'Sales Team Mavelikkara')], limit=1)
         print("team", team.member_ids)
