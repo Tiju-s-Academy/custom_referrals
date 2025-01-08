@@ -16,7 +16,7 @@ class NewReferral(models.Model):
                              default='draft', tracking=True)
     location = fields.Char(string='Location')
     user = fields.Many2one('res.users', string='Lead By', default=lambda self: self.env.user)
-    salesperson = fields.Many2one('res.users', string='Salesperson')
+    salesperson = fields.Many2one('res.users', string='Salesperson', compute='_compute_salesperson')
     lead_id = fields.Many2one('crm.lead', string='Related Lead', readonly=True)  # Link to the related CRM lead
 
     stage = fields.Char(string='Lead Stage', readonly=True, compute='_compute_stage', store=True)
