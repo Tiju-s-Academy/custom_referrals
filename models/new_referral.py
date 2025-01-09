@@ -1,6 +1,6 @@
 from odoo import http, SUPERUSER_ID
 from odoo import fields,models,api
-
+from odoo.exceptions import ValidationError
 
 class NewReferral(models.Model):
     _name = 'new.referral'
@@ -31,21 +31,23 @@ class NewReferral(models.Model):
             else:
                 rec.name = "Referral Lead"
 
-    # @api.constrains('phone', 'email')
-    # def _check_phone_email_in_crm_lead(self):
-    #     for record in self:
-    #         # Check for duplicate phone in crm.lead
-    #         if record.phone:
-    #             crm_lead_with_same_phone = self.env['crm.lead'].sudo().search([('phone', '=', record.phone)], limit=1)
-    #             if crm_lead_with_same_phone:
-    #                 raise ValidationError(f"The phone number {record.phone} is already used in CRM Leads.")
-    #
-    #         # Check for duplicate email in crm.lead
-    #         if record.email:
-    #             crm_lead_with_same_email = self.env['crm.lead'].sudo().search([('email_from', '=', record.email)],
-    #             limit=1)
-    #             if crm_lead_with_same_email:
-    #                 raise ValidationError(f"The email address {record.email} is already used in CRM Leads.")
+    @api.constrains('phone')
+    def _check_duplicate_phone(self):
+        for record in self:
+            if record.phone:
+                # Search for existing referrals with the same phone number
+                existing_referral = self.env['new.referral'].search([
+                    ('phone', '=', record.phone),
+                    ('id', '!=', record.id)  # Exclude current record
+                ], limit=1)
+                
+                if existing_referral:
+                    # Get the employee name who created the original referral
+                    creator = existing_referral.user.name
+                    raise ValidationError(
+                        f"A referral with this phone number already exists! "
+                        f"It was created by {creator}."
+                    )
 
     @api.depends('lead_id.stage_id')
     def _compute_stage(self):
