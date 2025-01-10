@@ -70,8 +70,16 @@ class NewReferral(models.Model):
 
     def action_submit(self):
         team = self.env['crm.team'].sudo().search([('name', '=', 'Sales Team Mavelikkara')], limit=1)
-        print("team", team.member_ids)
         employee = self.env['hr.employee'].sudo().search([('user_id', '=', self.user.id)])
+        
+        # Determine source based on user group
+        if self.env.user.has_group('custom_referrals.media_referral'):
+            source_name = 'Organic Media Leads'
+        else:
+            source_name = 'Online SBU Referral'
+            
+        source_id = self.env['utm.source'].sudo().search([('name', '=', source_name)])
+        
         for record in self:
             superuser = record.env['res.users'].sudo().browse(SUPERUSER_ID)
             partner = self.env['res.partner'].sudo().create({
@@ -80,7 +88,6 @@ class NewReferral(models.Model):
                 'email': record.email,
             })
             print("new partner", partner)
-            source_id = self.env['utm.source'].sudo().search([('name','=','Online SBU Referral')])
             lead = self.env['crm.lead'].with_user(superuser).create({
                 'name': record.name,
                 'partner_id': partner.id,

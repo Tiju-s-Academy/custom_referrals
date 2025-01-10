@@ -11,7 +11,7 @@
         'views/new_referral_view.xml',
         'views/referrals_menu.xml',
     ],
-
+    'post_init_hook': 'post_init_hook',
     'application': True,
     'license': 'LGPL-3',
 }

@@ -9,4 +9,8 @@
         <field name="name">admin</field>
         <field name="category_id" ref="referral_groups"/>
     </record>
+    <record id="media_referral" model="res.groups">
+        <field name="name">media</field>
+        <field name="category_id" ref="referral_groups"/>
+    </record>
 </odoo>
